@@ -8,7 +8,10 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 public class BlurredBackgroundActivity extends Activity implements Target {
 
@@ -32,7 +35,7 @@ public class BlurredBackgroundActivity extends Activity implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, LoadedFrom from) {
-        getWindow().setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
+        changeBackground(new BitmapDrawable(getResources(), bitmap));
     }
 
     @Override
@@ -50,4 +53,21 @@ public class BlurredBackgroundActivity extends Activity implements Target {
         return BACKGROUND_IMAGE_URL;
     }
 
+    private void changeBackground(Drawable drawable) {
+        View decorView = getWindow().getDecorView();
+        Drawable oldBackgroundDrawable = decorView.getBackground();
+        TransitionDrawable transitionDrawable = new TransitionDrawable(
+                new Drawable[]{oldBackgroundDrawable, drawable});
+        setBackgroundCompat(decorView, transitionDrawable);
+        transitionDrawable.startTransition(1000);
+    }
+
+    private static void setBackgroundCompat(View view, Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.setBackground(drawable);
+        } else {
+            //noinspection deprecation
+            view.setBackgroundDrawable(drawable);
+        }
+    }
 }
