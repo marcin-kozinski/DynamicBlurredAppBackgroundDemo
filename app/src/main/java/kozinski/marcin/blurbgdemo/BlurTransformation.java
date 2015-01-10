@@ -4,6 +4,7 @@ import com.squareup.picasso.Transformation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
@@ -25,15 +26,16 @@ public class BlurTransformation implements Transformation {
     @Override
     public Bitmap transform(Bitmap bitmap) {
         bitmap = cropBitmapWidthToMultipleOfFour(bitmap);
+        Bitmap argbBitmap = convertBitmap(bitmap, Config.ARGB_8888);
 
-        Bitmap blurredBitmap = Bitmap
-                .createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap blurredBitmap = Bitmap.createBitmap(argbBitmap.getWidth(), argbBitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
         // Initialize RenderScript and the script to be used
         RenderScript renderScript = RenderScript.create(context);
         ScriptIntrinsicBlur script = ScriptIntrinsicBlur
                 .create(renderScript, Element.U8_4(renderScript));
         // Allocate memory for Renderscript to work with
-        Allocation input = Allocation.createFromBitmap(renderScript, bitmap);
+        Allocation input = Allocation.createFromBitmap(renderScript, argbBitmap);
         Allocation output = Allocation.createFromBitmap(renderScript, blurredBitmap);
 
         script.setInput(input);
@@ -42,7 +44,7 @@ public class BlurTransformation implements Transformation {
         output.copyTo(blurredBitmap);
 
         renderScript.destroy();
-        bitmap.recycle();
+        argbBitmap.recycle();
         return blurredBitmap;
     }
 
@@ -61,5 +63,21 @@ public class BlurTransformation implements Transformation {
             //         ScaleType.CENTER);
         }
         return bitmap;
+    }
+
+    private static Bitmap convertBitmap(Bitmap bitmap, Config config) {
+        if (bitmap.getConfig() == config) {
+            return bitmap;
+        } else {
+            Bitmap argbBitmap;
+            argbBitmap = bitmap.copy(config, false);
+            bitmap.recycle();
+            if (argbBitmap == null) {
+                throw new UnsupportedOperationException(
+                        "Couldn't convert bitmap from config " + bitmap.getConfig() + " to "
+                                + config);
+            }
+            return argbBitmap;
+        }
     }
 }
