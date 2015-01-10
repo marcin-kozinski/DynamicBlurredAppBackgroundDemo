@@ -11,21 +11,36 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+
+import java.util.concurrent.TimeUnit;
 
 public class BlurredBackgroundActivity extends Activity implements Target {
 
-    private static final String BACKGROUND_IMAGE_URL
-            = "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/food_drink_lemon_orange_360.png";
+    private static final String[] BACKGROUND_IMAGE_URLS = {
+            "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/food_drink_lemon_orange_360.png",
+            "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/landscape_mountain_forest_360.png",
+            "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/monster_cyclop_eye_360.png",
+            "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/monster_suitcase_spider_360.png",
+            "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/space_monster_360.png"};
     private static final float BLUR_RADIUS = 25F;
+    private final Handler handler = new Handler();
 
     private BlurTransformation blurTransformation;
+    private int backgroundIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         blurTransformation = new BlurTransformation(this, BLUR_RADIUS);
         updateWindowBackground();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -47,10 +62,18 @@ public class BlurredBackgroundActivity extends Activity implements Target {
         String url = getUrlToTheImage();
         Picasso.with(this).load(url).transform(blurTransformation)
                 .error(R.drawable.background_default).into(this);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateWindowBackground();
+            }
+        }, TimeUnit.SECONDS.toMillis(10));
     }
 
     private String getUrlToTheImage() {
-        return BACKGROUND_IMAGE_URL;
+        final String imageUrl = BACKGROUND_IMAGE_URLS[backgroundIndex];
+        backgroundIndex = (backgroundIndex + 1) % BACKGROUND_IMAGE_URLS.length;
+        return imageUrl;
     }
 
     private void changeBackground(Drawable drawable) {
