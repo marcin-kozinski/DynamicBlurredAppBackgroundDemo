@@ -24,6 +24,8 @@ public class BlurTransformation implements Transformation {
 
     @Override
     public Bitmap transform(Bitmap bitmap) {
+        bitmap = cropBitmapWidthToMultipleOfFour(bitmap);
+
         Bitmap blurredBitmap = Bitmap
                 .createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         // Initialize RenderScript and the script to be used
@@ -47,5 +49,17 @@ public class BlurTransformation implements Transformation {
     @Override
     public String key() {
         return "blur(" + String.valueOf(radius) + ")";
+    }
+
+    private static Bitmap cropBitmapWidthToMultipleOfFour(Bitmap bitmap) {
+        int bitmapWidth = bitmap.getWidth();
+        if (bitmapWidth % 4 != 0) {
+            // This is the place to actually crop the bitmap,
+            // but I don't have the necessary method in this demo project
+
+            // bitmap = BitmapUtils.resize(bitmap, bitmapWidth - (bitmapWidth % 4), bitmap.getHeight(),
+            //         ScaleType.CENTER);
+        }
+        return bitmap;
     }
 }
