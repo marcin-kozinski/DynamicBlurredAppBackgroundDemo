@@ -14,10 +14,14 @@ public class BlurredBackgroundActivity extends Activity implements Target {
 
     private static final String BACKGROUND_IMAGE_URL
             = "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/food_drink_lemon_orange_360.png";
+    private static final float BLUR_RADIUS = 25F;
+
+    private BlurTransformation blurTransformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        blurTransformation = new BlurTransformation(this, BLUR_RADIUS);
         updateWindowBackground();
     }
 
@@ -38,7 +42,8 @@ public class BlurredBackgroundActivity extends Activity implements Target {
 
     private void updateWindowBackground() {
         String url = getUrlToTheImage();
-        Picasso.with(this).load(url).error(R.drawable.background_default).into(this);
+        Picasso.with(this).load(url).transform(blurTransformation)
+                .error(R.drawable.background_default).into(this);
     }
 
     private String getUrlToTheImage() {
