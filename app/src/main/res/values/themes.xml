@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BlurredBackgroundThemeBase" parent="android:Theme.NoTitleBar" />
+
+    <style name="BlurredBackgroundTheme" parent="BlurredBackgroundThemeBase">
+        <item name="android:windowBackground">@drawable/background_default</item>
+    </style>
+
+</resources>
