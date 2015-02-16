@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 public class BlurredBackgroundActivity extends Activity implements Target {
 
+    /*
+     * Images from Marie Schweiz's Lorem Ipsum Illustration
+     * https://github.com/MarieSchweiz/lorem-ipsum-illustration
+     */
     private static final String[] BACKGROUND_IMAGE_URLS = {
             "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/food_drink_lemon_orange_360.png",
             "https://raw.githubusercontent.com/MarieSchweiz/lorem-ipsum-illustration/master/png/landscape_mountain_forest_360.png",
